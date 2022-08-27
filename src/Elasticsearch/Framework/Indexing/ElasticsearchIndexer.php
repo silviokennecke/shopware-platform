@@ -24,6 +24,7 @@ use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Elasticsearch\Exception\ElasticsearchIndexingException;
 use Shopware\Elasticsearch\Framework\ElasticsearchHelper;
 use Shopware\Elasticsearch\Framework\ElasticsearchRegistry;
+use Shopware\Elasticsearch\Framework\Indexing\Event\ElasticsearchIndexerIteratorEvent;
 use Shopware\Elasticsearch\Framework\Indexing\Event\ElasticsearchIndexerLanguageCriteriaEvent;
 
 class ElasticsearchIndexer extends AbstractMessageHandler
@@ -306,6 +307,8 @@ class ElasticsearchIndexer extends AbstractMessageHandler
                 $this->indexCreator->createIndex($definition, $index, $alias, $context);
 
                 $iterator = $this->iteratorFactory->createIterator($definition->getEntityDefinition());
+
+                $this->eventDispatcher->dispatch(new ElasticsearchIndexerIteratorEvent($iterator, $definition, $context));
 
                 // We don't need an index task, when it's the first indexing. This will allow alias swapping to nothing
                 if ($hasAlias) {

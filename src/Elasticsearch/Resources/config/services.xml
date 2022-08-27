@@ -164,6 +164,10 @@
             <tag name="shopware.es.definition"/>
         </service>
 
+        <service id="Shopware\Elasticsearch\Product\ProductRelevanceIndexUpdater">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="Shopware\Elasticsearch\Product\CustomFieldUpdater">
             <argument type="service" id="Shopware\Elasticsearch\Framework\ElasticsearchOutdatedIndexDetector"/>
             <argument type="service" id="Elasticsearch\Client"/>
