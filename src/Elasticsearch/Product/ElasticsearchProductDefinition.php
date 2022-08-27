@@ -536,6 +536,7 @@ SELECT
 FROM product p
     LEFT JOIN product pp ON(p.parent_id = pp.id AND pp.version_id = :liveVersionId)
     LEFT JOIN product_visibility ON(product_visibility.product_id = p.visibilities AND product_visibility.product_version_id = :liveVersionId)
+    LEFT JOIN sales_channel_language ON(sales_channel_language.sales_channel_id = product_visibility.sales_channel_id)
 
     LEFT JOIN (
         :productTranslationQuery:
@@ -545,7 +546,10 @@ FROM product p
         :productTranslationQuery:
     ) product_translation_parent ON (product_translation_parent.product_id = p.parent_id)
 
-WHERE p.id IN (:ids) AND p.version_id = :liveVersionId AND (p.child_count = 0 OR p.parent_id IS NOT NULL OR JSON_EXTRACT(`p`.`variant_listing_config`, "$.displayParent") = 1)
+WHERE p.id IN (:ids)
+      AND p.version_id = :liveVersionId
+      AND (p.child_count = 0 OR p.parent_id IS NOT NULL OR JSON_EXTRACT(`p`.`variant_listing_config`, "$.displayParent") = 1)
+      AND sales_channel_language.language_id = :languageId
 
 GROUP BY p.id
 SQL;
@@ -563,6 +567,7 @@ SQL;
             array_merge([
                 'ids' => $ids,
                 'liveVersionId' => Uuid::fromHexToBytes($context->getVersionId()),
+                'languageId' => Uuid::fromHexToBytes($context->getLanguageId()),
             ], $translationQuery->getParameters()),
             [
                 'ids' => Connection::PARAM_STR_ARRAY,
