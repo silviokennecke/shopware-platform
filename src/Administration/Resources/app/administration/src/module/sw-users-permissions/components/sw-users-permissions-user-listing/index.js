@@ -26,8 +26,9 @@ Component.register('sw-users-permissions-user-listing', {
             user: [],
             isLoading: false,
             itemToDelete: null,
+            confirmDelete: null,
             disableRouteParams: true,
-            confirmPassword: '',
+            confirmPasswordModal: false,
             sortBy: 'username',
         };
     },
@@ -119,7 +120,23 @@ Component.register('sw-users-permissions-user-listing', {
             this.itemToDelete = user;
         },
 
-        async onConfirmDelete(user) {
+        onCloseDeleteModal() {
+            this.itemToDelete = null;
+        },
+
+        onConfirmDelete() {
+            this.confirmDelete = this.itemToDelete;
+
+            this.onCloseDeleteModal();
+
+            this.confirmPasswordModal = true;
+        },
+
+        deleteUser(context) {
+            this.confirmPasswordModal = false;
+            const user = this.confirmDelete;
+            this.confirmDelete = null;
+
             const username = `${user.firstName} ${user.lastName} `;
             const titleDeleteSuccess = this.$tc('global.default.success');
             const messageDeleteSuccess = this.$tc('sw-users-permissions.users.user-grid.notification.deleteSuccess.message',
@@ -137,30 +154,6 @@ Component.register('sw-users-permissions-user-listing', {
                 return;
             }
 
-            let verifiedToken;
-            try {
-                verifiedToken = await this.loginService.verifyUserToken(this.confirmPassword);
-            } catch (e) {
-                this.createNotificationError({
-                    title: this.$tc(
-                        'sw-users-permissions.users.user-detail.passwordConfirmation.notificationPasswordErrorTitle',
-                    ),
-                    message: this.$tc(
-                        'sw-users-permissions.users.user-detail.passwordConfirmation.notificationPasswordErrorMessage',
-                    ),
-                });
-            } finally {
-                this.confirmPassword = '';
-            }
-
-            if (!verifiedToken) {
-                return;
-            }
-
-            this.confirmPasswordModal = false;
-            const context = { ...Shopware.Context.api };
-            context.authToken.access = verifiedToken;
-
             this.userRepository.delete(user.id, context).then(() => {
                 this.createNotificationSuccess({
                     title: titleDeleteSuccess,
@@ -173,11 +166,10 @@ Component.register('sw-users-permissions-user-listing', {
                     message: messageDeleteError,
                 });
             });
-            this.onCloseDeleteModal();
         },
 
-        onCloseDeleteModal() {
-            this.itemToDelete = null;
+        onCloseConfirmPasswordModal() {
+            this.confirmPasswordModal = false;
         },
     },
 });

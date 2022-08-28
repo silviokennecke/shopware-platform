@@ -157,22 +157,6 @@
                 {% endblock %}
 
                 <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
-                {% block sw_settings_user_list_delete_modal_input__confirm_password %}
-                <sw-password-field
-                    v-model="confirmPassword"
-                    class="sw-settings-user-detail__confirm-password"
-                    required
-                    name="sw-field--confirm-password"
-                    :password-toggle-able="true"
-                    :copy-able="false"
-                    autocomplete="new-password"
-                    :label="$tc('sw-users-permissions.users.user-detail.passwordConfirmation.labelConfirmPassword')"
-                    :placeholder="$tc('sw-users-permissions.users.user-detail.passwordConfirmation.placeholderConfirmPassword')"
-                    @keypress.enter="onConfirmDelete(item)"
-                />
-                {% endblock %}
-
-                <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                 {% block sw_settings_user_list_delete_modal_footer %}
                 <template #modal-footer>
                     <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
@@ -188,10 +172,9 @@
                     <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
                     {% block sw_settings_user_list_delete_modal_confirm %}
                     <sw-button
-                        :disabled="!confirmPassword"
                         variant="danger"
                         size="small"
-                        @click="onConfirmDelete(item)"
+                        @click="onConfirmDelete"
                     >
                         {{ $tc('sw-users-permissions.users.user-grid.labelButtonDelete') }}
                     </sw-button>
@@ -199,6 +182,15 @@
                 </template>
                 {% endblock %}
             </sw-modal>
+            {% endblock %}
+
+            <!-- eslint-disable-next-line sw-deprecation-rules/no-twigjs-blocks -->
+            {% block sw_settings_user_list_confirm_password_modal %}
+            <sw-verify-user-modal
+                v-if="confirmPasswordModal"
+                @verified="deleteUser"
+                @close="onCloseConfirmPasswordModal"
+            />
             {% endblock %}
         </template>
     </sw-data-grid>
