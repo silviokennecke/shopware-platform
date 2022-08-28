@@ -384,31 +384,12 @@ Component.register('sw-profile-index', {
             this.setMediaItem({ targetId: mediaItem.id });
         },
 
-        onSubmitConfirmPassword() {
-            return this.loginService.verifyUserToken(this.confirmPassword).then((verifiedToken) => {
-                if (!verifiedToken) {
-                    return;
-                }
+        onSubmitConfirmPassword(verifiedToken) {
+            this.confirmPasswordModal = false;
+            this.isSaveSuccessful = false;
+            this.isLoading = true;
 
-                const authObject = {
-                    ...this.loginService.getBearerAuthentication(),
-                    ...{
-                        access: verifiedToken,
-                    },
-                };
-
-                this.loginService.setBearerAuthentication(authObject);
-
-                this.confirmPasswordModal = false;
-                this.isSaveSuccessful = false;
-                this.isLoading = true;
-
-                this.saveUser(verifiedToken);
-            }).catch(() => {
-                this.createErrorMessage(this.$tc('sw-profile.index.notificationOldPasswordErrorMessage'));
-            }).finally(() => {
-                this.confirmPassword = '';
-            });
+            this.saveUser(verifiedToken);
         },
 
         onCloseConfirmPasswordModal() {
