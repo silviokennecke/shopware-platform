@@ -216,7 +216,6 @@ Component.register('sw-profile-index', {
 
                 if (!localeIds.includes(this.user.localeId)) {
                     this.user.localeId = fallbackId;
-                    this.saveUser();
                 }
                 this.isUserLoading = false;
 
@@ -313,7 +312,7 @@ Component.register('sw-profile-index', {
             });
         },
 
-        saveUser(authToken) {
+        saveUser(context) {
             if (!this.acl.can('user:editor')) {
                 const changes = this.userRepository.getSyncChangeset([this.user]);
                 delete changes.changeset[0].changes.id;
@@ -329,9 +328,6 @@ Component.register('sw-profile-index', {
 
                 return;
             }
-
-            const context = { ...Shopware.Context.api };
-            context.authToken.access = authToken;
 
             this.userRepository.save(this.user, context).then(async () => {
                 // @deprecated tag:v6.5.0 - Will be removed
@@ -384,12 +380,12 @@ Component.register('sw-profile-index', {
             this.setMediaItem({ targetId: mediaItem.id });
         },
 
-        onSubmitConfirmPassword(verifiedToken) {
+        onSubmitConfirmPassword(context) {
             this.confirmPasswordModal = false;
             this.isSaveSuccessful = false;
             this.isLoading = true;
 
-            this.saveUser(verifiedToken);
+            this.saveUser(context);
         },
 
         onCloseConfirmPasswordModal() {
