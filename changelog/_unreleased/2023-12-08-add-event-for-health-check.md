@@ -1,6 +1,6 @@
 ---
 title: Add event for health check
-issue: n.a.
+issue: NEXT-32336
 author: Silvio Kennecke
 author_email: development@silvio-kennecke.de
 author_github: @silviokennecke
