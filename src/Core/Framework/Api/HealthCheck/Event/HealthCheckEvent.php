@@ -13,12 +13,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class HealthCheckEvent extends Event
 {
     public function __construct(
-        private readonly Context $context
+        public readonly Context $context
     ) {
-    }
-
-    public function getContext(): Context
-    {
-        return $this->context;
     }
 }
